@@ -241,7 +241,7 @@ static void GimbalCtrl_StateHandler(void)
             break;
         case GIMBAL_RESET:
             // gim_motor[up_pitch_motor]->set_mode(gim_motor[up_pitch_motor], DM_CMD_ZERO_POSITION);
-            gim_motor[dowm_pitch_motor]->set_mode(gim_motor[dowm_pitch_motor], DM_CMD_ZERO_POSITION);
+            // gim_motor[dowm_pitch_motor]->set_mode(gim_motor[dowm_pitch_motor], DM_CMD_ZERO_POSITION);
             // gim_motor[yaw_motor]->set_mode(gim_motor[yaw_motor], DM_CMD_ZERO_POSITION);
             // if ( gim_motor[up_pitch_motor]->ctrl_mode!=DM_CMD_ZERO_POSITION||gim_motor[dowm_pitch_motor]->ctrl_mode!=DM_CMD_ZERO_POSITION)
             // {

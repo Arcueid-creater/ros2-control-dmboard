@@ -17,13 +17,15 @@ MCN_DECLARE(chassis_cmd);
 static McnNode_t chassis_cmd_node;
 MCN_DECLARE(chassis_fdb);
 // static struct ins_msg ins;
-
+MCN_DECLARE(chassis_motor_trans_topic);
+static McnNode_t chassis_motor_trans_node ;
 // static struct chassis_cmd_msg chassis_cmd;
 // 发布
 
 // static struct chassis_fdb_msg chassis_fdb_data;
 static struct chassis_cmd_msg chassis_cmd;
 static struct chassis_fdb_msg chassis_fdb;
+static struct chassis_motor_msg chassis_motor_msg;
 static struct ins_msg ins_data;
 
 
@@ -79,7 +81,10 @@ float follow_err,vw;
  void chassis_motor_init();
 static void absolute_cal(struct chassis_cmd_msg *cmd, float angle);
 static float chassis_dt;
-
+// dji_motor_object_t *return_chassis_motor()
+// {
+//     return chassis_motor;
+// }
 void chassis_task_init()
 {
     chassis_pub_init();
@@ -290,6 +295,17 @@ static void chassis_sub_init(void)
 static void chassis_pub_push(void)
 {
     mcn_publish(MCN_HUB(chassis_fdb), &chassis_fdb);
+    for (int i=0;i<4;i++)
+    {
+        dji_motor_measure_t measure=chassis_motor[i]->measure;
+        chassis_motor_msg.motor_tran_msg[i].motor_id=i;
+        chassis_motor_msg.motor_tran_msg[i].ecd=measure.ecd;
+        chassis_motor_msg.motor_tran_msg[i].real_current=measure.real_current;
+        chassis_motor_msg.motor_tran_msg[i].speed_rpm=measure.speed_rpm;
+        chassis_motor_msg.motor_tran_msg[i].temperature=measure.temperature;
+        chassis_motor_msg.motor_tran_msg[i].total_angle=measure.total_angle;
+    }
+    mcn_publish(MCN_HUB(chassis_motor_trans_topic), &chassis_motor_msg);
 }
 
 /**

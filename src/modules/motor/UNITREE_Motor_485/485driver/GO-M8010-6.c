@@ -139,6 +139,7 @@ HAL_StatusTypeDef SERVO_Send_recv(MOTOR_send *pData, MOTOR_recv *rData)
 		SET_huart2_DE_UP();
 		SET_huart3_DE_UP();
 		txStatus = HAL_UART_Transmit_DMA(&huart3, (uint8_t *)&(pData->motor_send_data), sizeof(pData->motor_send_data));
+		//RS485
 	}
 
 	if (txStatus != HAL_OK)

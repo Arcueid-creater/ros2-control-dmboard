@@ -25,16 +25,16 @@ typedef struct
     /* 以下是处理得出的数据 */
     float angle_single_round; // 单圈角度
     float speed_aps;          // 角速度,单位为:度/秒
-    float total_angle;        // 总角度,注意方向
+    float total_angle;        // 总角度,注意方向                   1
     int32_t total_round;      // 总圈数,注意方向
     float  target;            // 目标值(输出轴扭矩矩/速度/角度(单位度))
 
     /* 以下是电调直接回传的数据 */
-    uint16_t ecd;             // 0-8191
+    uint16_t ecd;             // 0-8191                        1
     uint16_t last_ecd;        // 上一次读取的编码器值
-    int16_t  speed_rpm;       // 电机的转速值
-    int16_t real_current;     // 实际转矩电流
-    uint8_t temperature;      // Celsius
+    int16_t  speed_rpm;       // 电机的转速值                 1
+    int16_t real_current;     // 实际转矩电流                 1
+    uint8_t temperature;      // Celsius                    1
 } dji_motor_measure_t;
 
 /**
@@ -43,7 +43,7 @@ typedef struct
 typedef struct dji_motor_object
 {
     FDCAN_HandleTypeDef  *can;                // 电机挂载CAN句柄
-    uint8_t can_id;                         // 电机CAN id CAN1为1，CAN2为2
+    uint8_t can_id;                         // 电机CAN id CAN1为1，CAN2为2   1
     dji_motor_measure_t measure;            // 电机测量值
 
     uint32_t tx_id;                         // 发送id(主发)

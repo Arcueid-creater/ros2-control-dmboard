@@ -285,7 +285,7 @@ void unitree_motor_control(void)
 
             // 发送控制指令并接收反馈
             unitree_motor_send(motor);
-
+            //RS485
             if (motor->measure.error_cnt>=100)
             {
 

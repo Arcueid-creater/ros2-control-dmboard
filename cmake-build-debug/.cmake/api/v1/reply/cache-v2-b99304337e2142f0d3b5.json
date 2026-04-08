@@ -163,7 +163,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "d:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug"
+			"value" : "d:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -635,7 +635,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework"
+			"value" : "D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1191,7 +1191,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug"
+			"value" : "D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug"
 		},
 		{
 			"name" : "CtrBoard-H7_ALL_IS_TOP_LEVEL",
@@ -1215,7 +1215,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework"
+			"value" : "D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework"
 		}
 	],
 	"kind" : "cache",

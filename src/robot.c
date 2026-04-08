@@ -23,7 +23,7 @@ MCN_DEFINE(shoot_fdb,sizeof(struct shoot_fdb_msg));
 MCN_DEFINE(transmission_fdb_topic,sizeof(struct trans_fdb_msg));
 MCN_DEFINE(lifter_cmd_topic,sizeof(struct lifter_cmd_msg));
 MCN_DEFINE(lifter_fdb_topic,sizeof(struct lifter_fdb_msg));
-
+MCN_DEFINE(chassis_motor_trans_topic,sizeof(struct chassis_motor_msg));
 static void mcn_topic_init(void);
 
 void robot_init()
@@ -45,7 +45,7 @@ void robot_init()
     trans_task_init();
     shoot_task_init();
     ins_task_init();
-    LifterInit();
+    // LifterInit();
     OS_task_init(); // 创建基础任务
 
     // 初始化完成,开启中断
@@ -70,5 +70,6 @@ static void mcn_topic_init(void)
     mcn_advertise(MCN_HUB(transmission_fdb_topic), NULL);
     mcn_advertise(MCN_HUB(lifter_cmd_topic), NULL);
     mcn_advertise(MCN_HUB(lifter_fdb_topic), NULL);
+    mcn_advertise(MCN_HUB(chassis_motor_trans_topic), NULL);
     // mcn_advertise(MCN_HUB(lifter_fdb_topic), NULL);
 }

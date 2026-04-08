@@ -6,23 +6,23 @@
 
 #IncludeRegexTransform: 
 
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Core/Startup/startup_stm32h723vgtx.s
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Startup/startup_stm32h723vgtx.s
 
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
 intrinsics.h
 -
 machine.h
 -
 
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
 ../Config/SEGGER_RTT_Conf.h
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
 stdlib.h
 -
 stdarg.h
 -
 
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.s
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT_ASM_ARMv7M.s
 SEGGER_RTT.h
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/RTT/SEGGER_RTT.h
 

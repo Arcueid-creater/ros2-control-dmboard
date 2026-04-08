@@ -149,10 +149,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef * huart, uint16_t Size)
     if(huart->Instance == UART5)
     {
         sizea=Size;
-        // if (Size !=18)
-        // {
-        //     return;
-        // }
 
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 

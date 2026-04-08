@@ -1,6 +1,6 @@
 CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/algorithm/MahonyAHRS/MahonyAHRS.c.obj: \
- D:\Robomaster\new_mecanum_revise\HNU_Embedded_Framework\src\algorithm\MahonyAHRS\MahonyAHRS.c \
- D:\Robomaster\new_mecanum_revise\HNU_Embedded_Framework\src\algorithm\MahonyAHRS\MahonyAHRS.h \
+ D:\Robomaster\ros2-mecanum-dmboard\HNU_Embedded_Framework\src\algorithm\MahonyAHRS\MahonyAHRS.c \
+ D:\Robomaster\ros2-mecanum-dmboard\HNU_Embedded_Framework\src\algorithm\MahonyAHRS\MahonyAHRS.h \
  d:\qq\wenjian\arm_gcc\arm_gcc\arm_gcc\arm\arm-none-eabi\include\math.h \
  d:\qq\wenjian\arm_gcc\arm_gcc\arm_gcc\arm\arm-none-eabi\include\sys\reent.h \
  d:\qq\wenjian\arm_gcc\arm_gcc\arm_gcc\arm\arm-none-eabi\include\_ansi.h \

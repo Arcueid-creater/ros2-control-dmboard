@@ -97,6 +97,20 @@ typedef struct
 //    robot_status_t robot_status;
 //    ext_power_heat_data_t power_heat_data_t;
 //};
+typedef struct
+{
+    uint8_t motor_id;
+    int16_t speed_rpm;
+    float total_angle;
+    uint16_t ecd;
+    int16_t real_current;
+    uint8_t temperature;
+}chassis_motor_trans;
+
+struct chassis_motor_msg
+{
+    chassis_motor_trans motor_tran_msg[4];
+};
 
 /* ----------------CMD应用发布的控制数据,应当由gimbal/chassis/shoot订阅---------------- */
 /**

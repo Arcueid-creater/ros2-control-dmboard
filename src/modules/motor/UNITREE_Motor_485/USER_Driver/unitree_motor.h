@@ -39,15 +39,15 @@ void unitree_motor_rs485_reset(void);
 typedef struct
 {
     /* 原始反馈数据 */
-    uint8_t motor_id;           // 电机ID
+    uint8_t motor_id;           // 电机ID                     1
     uint8_t mode;               // 当前工作模式
-    int8_t  temperature;        // 电机温度 (°C)
-    uint8_t error;              // 错误码: 0-正常 1-过热 2-过流 3-过压 4-编码器故障
+    int8_t  temperature;        // 电机温度 (°C)               1
+    uint8_t error;              // 错误码: 0-正常 1-过热 2-过流 3-过压 4-编码器故障         1
     
     /* 处理后的数据 */
-    float position;             // 当前位置 (rad)
-    float velocity;             // 当前速度 (rad/s)
-    float torque;               // 当前扭矩 (N.m)
+    float position;             // 当前位置 (rad)               1
+    float velocity;             // 当前速度 (rad/s)             1
+    float torque;               // 当前扭矩 (N.m)               1
     float foot_force;           // 足端传感器数据 (0-4095)
     
     /* 目标值 */
@@ -58,7 +58,7 @@ typedef struct
     /* 通信状态 */
     uint8_t correct;            // 数据是否完整: 1-完整 0-不完整
     uint32_t update_cnt;        // 数据更新计数
-    uint32_t error_cnt;         // 通信错误计数
+    uint8_t error_cnt;         // 通信错误计数                    1
 
 } unitree_motor_measure_t;
 void Software_Reset(void);

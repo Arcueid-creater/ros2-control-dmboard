@@ -1,3 +1,3 @@
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/CtrBoard-H7_ALL.elf.dir
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Robomaster/new_mecanum_revise/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/CtrBoard-H7_ALL.elf.dir
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/cmake-build-debug/CMakeFiles/rebuild_cache.dir
