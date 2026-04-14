@@ -315,9 +315,9 @@ static void ChassisState_Ctrl()
     {
         if (rc_now->sw2==RC_MI||rc_now->sw2==RC_DN)
         {
-            chassis_cmd_data.ctrl_mode=CHASSIS_FOLLOW_GIMBAL;//目前没有云台，
+            chassis_cmd_data.ctrl_mode=CHASSIS_ROS2;//目前没有云台，
         }
-        if (rc_now->sw1==RC_DN&&chassis_cmd_data.ctrl_mode==CHASSIS_FOLLOW_GIMBAL)//处于LIFTER_HEIGHT_KEEP模式，说明之前归中任务完成，可以直接转换成小陀螺模式
+        if (rc_now->sw1==RC_DN&&chassis_cmd_data.ctrl_mode==CHASSIS_ROS2)//处于LIFTER_HEIGHT_KEEP模式，说明之前归中任务完成，可以直接转换成小陀螺模式
         {
             // chassis_cmd_data.ctrl_mode=CHASSIS_SPIN;
         }
@@ -342,6 +342,11 @@ static void ChassisState_Ctrl()
             chassis_cmd_data.vy =  (float)rc_now->ch2 * CHASSIS_RC_MOVE_RATIO_Y / RC_DBUS_MAX_VALUE * MAX_CHASSIS_VY_SPEED + km.vy * CHASSIS_PC_MOVE_RATIO_Y;
             chassis_cmd_data.vw =  (float)rc_now->ch3 * CHASSIS_RC_MOVE_RATIO_R / RC_DBUS_MAX_VALUE * MAX_CHASSIS_VR_SPEED + (float)rc_now->mouse.x * CHASSIS_PC_MOVE_RATIO_R;
 
+            break;
+        case CHASSIS_ROS2:
+            chassis_cmd_data.vx=trans_fdb_data.liner_x* MAX_CHASSIS_VX_SPEED;
+            chassis_cmd_data.vy=trans_fdb_data.liner_y* MAX_CHASSIS_VY_SPEED;
+            chassis_cmd_data.vw=trans_fdb_data.liner_z* MAX_CHASSIS_VR_SPEED;
             break;
         case CHASSIS_SPIN:
             chassis_cmd_data.vw=2;// * msg_cmd->robot_status.chassis_power_limit/55;/*!小陀螺转速，随着功率限制提升加快转速*/

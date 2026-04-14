@@ -35,6 +35,14 @@ typedef enum {
     UNKNOWN = -1
 } TeamColor;
 
+/* ==================== 接收到的底盘命令 ==================== */
+typedef struct {
+    float linear_x;   // 前后速度 (m/s)
+    float linear_y;   // 左右速度 (m/s)
+    float angular_z;  // 旋转角速度 (rad/s)
+    uint8_t updated;  // 数据更新标志
+} chassis_cmd_received_t;
+
 /* ==================== 函数声明 ==================== */
 
 /**
@@ -102,6 +110,12 @@ uint8_t get_received_data(uint8_t *data, uint16_t *length);
  * @return 1=有新数据, 0=无新数据
  */
 uint8_t has_new_data(void);
+
+/**
+ * @brief 获取接收到的底盘速度命令
+ * @return 底盘命令结构体指针
+ */
+chassis_cmd_received_t* get_chassis_cmd_received(void);
 
 /* ==================== 线程间通信相关 ==================== */
 

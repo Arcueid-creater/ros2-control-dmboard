@@ -265,6 +265,9 @@ struct trans_fdb_msg
     float yaw_filtered;
     float pitch_filtered;
     uint8_t heartbeat;
+    float liner_x;
+    float liner_y;
+    float liner_z;
 };
 
 #endif

@@ -28,6 +28,7 @@ typedef enum
     CHASSIS_AUTO,          //底盘自动模式
     CHASSIS_NO_GIMBAL,
     CHASSIS_RETURN,
+    CHASSIS_ROS2,
 } chassis_mode_e;
 
 /**

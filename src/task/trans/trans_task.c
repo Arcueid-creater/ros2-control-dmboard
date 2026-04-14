@@ -53,6 +53,17 @@ static float pitch_filtered = 0;
 static float yaw_obs = 0;
 TeamColor team_color = UNKNOWN;
 
+/* ==================== 接收到的底盘命令存储 ==================== */
+static chassis_cmd_received_t chassis_cmd_received = {0};
+
+/**
+ * @brief 获取接收到的底盘速度命令
+ */
+chassis_cmd_received_t* get_chassis_cmd_received(void)
+{
+    return &chassis_cmd_received;
+}
+
 /* ==================== 接收数据缓冲区（新增）==================== */
 // 存储接收到的原始数据
 static uint8_t received_data_buffer[MOTOR_MAX_DATA_LEN];
@@ -154,6 +165,7 @@ static uint16_t expected_data_length = 0;
 typedef enum
 {
     TRANS_MSG_ID_RC_DBUS = 0x10,
+    TRANS_MSG_ID_CHASSIS_CMD = 0x20,  // 底盘速度命令
 } trans_msg_id_e;
 
 static void send_rc_dbus_data(const rc_dbus_obj_t* rc)
@@ -352,25 +364,52 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                         received_data_length = expected_data_length;
                         data_ready_flag = 1;  // 设置数据就绪标志
                         
-                        // ========== 示例：解析数据 ==========
-                        // 你可以在这里添加自己的解析逻辑
-                        
-                        // 示例1：如果是单个电机数据（17字节）
-                        if (expected_data_length >= 17)
+                        // ========== 解析数据 ==========
+                        if (expected_data_length >= 1)
                         {
                             size_t offset = 0;
-                            uint8_t motor_id = data[offset++];
+                            uint8_t msg_id = data[offset++];
                             
-                            float position, velocity, current, temperature;
-                            memcpy(&position, data + offset, sizeof(float)); offset += sizeof(float);
-                            memcpy(&velocity, data + offset, sizeof(float)); offset += sizeof(float);
-                            memcpy(&current, data + offset, sizeof(float)); offset += sizeof(float);
-                            memcpy(&temperature, data + offset, sizeof(float)); offset += sizeof(float);
-                            
-                            // 存储到反馈数据
-                            trans_fdb_data.yaw = position;
-                            trans_fdb_data.pitch = velocity;
-                            trans_fdb_data.roll = current;
+                            switch (msg_id)
+                            {
+                                case TRANS_MSG_ID_CHASSIS_CMD:
+                                {
+                                    // 解析底盘速度命令：3个float（linear_x, linear_y, angular_z）
+                                    if (expected_data_length >= 1 + 3 * sizeof(float))
+                                    {
+                                        float linear_x, linear_y, angular_z;
+                                        memcpy(&linear_x, data + offset, sizeof(float)); offset += sizeof(float);
+                                        memcpy(&linear_y, data + offset, sizeof(float)); offset += sizeof(float);
+                                        memcpy(&angular_z, data + offset, sizeof(float)); offset += sizeof(float);
+                                        
+                                        // 存储到底盘命令结构体
+                                        chassis_cmd_received.linear_x = linear_x;
+                                        chassis_cmd_received.linear_y = linear_y;
+                                        chassis_cmd_received.angular_z = angular_z;
+                                        chassis_cmd_received.updated = 1;  // 标记数据已更新
+                                        trans_fdb_data.liner_x = linear_x;
+                                        trans_fdb_data.liner_y = linear_y;
+                                        trans_fdb_data.liner_z = angular_z;
+                                        // TODO: 在这里添加你的底盘控制逻辑
+                                        // 例如：将速度命令转换为电机控制指令
+                                        // 或者发布到底盘控制topic
+                                    }
+                                    break;
+                                }
+                                
+                                case TRANS_MSG_ID_RC_DBUS:
+                                {
+                                    // 如果需要接收遥控器数据的话
+                                    // 添加解析逻辑
+                                    break;
+                                }
+                                
+                                default:
+                                {
+                                    // 未知消息ID
+                                    break;
+                                }
+                            }
                         }
                     }
                     

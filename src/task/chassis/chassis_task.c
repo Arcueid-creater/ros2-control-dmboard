@@ -150,6 +150,12 @@ void chassis_control_task(void)
                     // absolute_cal(&chassis_cmd, chassis_cmd.offset_angle);
                     /* 底盘不跟随云台模式：底盘速度直接受chassis_cmd控制，不进行坐标转换 */
                     chassis_calc_moto_speed(&chassis_cmd, motor_ref);
+                    break;
+                case CHASSIS_ROS2:
+                    // absolute_cal(&chassis_cmd, chassis_cmd.offset_angle);
+                    /* 底盘不跟随云台模式：底盘速度直接受chassis_cmd控制，不进行坐标转换 */
+                    chassis_calc_moto_speed(&chassis_cmd, motor_ref);
+                    break;
                 case CHASSIS_RETURN:
                     if (fabs(ins_data.yaw-chassis_fdb.spin_yaw_offset) < 0.5)
                     {
