@@ -8,6 +8,21 @@
 
 #define HEART_BEAT 500 // ms
 
+/* ==================== USB接收：队列传输（新增）==================== */
+#define USB_RX_MSG_LEN          256
+#define USB_RX_MSG_COUNT        8
+
+typedef struct
+{
+    uint16_t len;
+    uint8_t data[USB_RX_MSG_LEN];
+} usb_rx_msg_t;
+
+static osMessageQId usb_rx_queue = NULL;
+static usb_rx_msg_t usb_rx_msg_pool[USB_RX_MSG_COUNT];
+static uint8_t usb_rx_msg_idx = 0;
+static void process_usb_bytes(uint8_t* Buf, uint16_t Len);
+
 /* ==================== 线程间通信相关 ==================== */
 static rc_dbus_obj_t *rc_now, *rc_last;
 // 发布
@@ -304,10 +319,36 @@ void send_float_array(float *floats, uint8_t count)
  */
 void process_usb_data(uint8_t* Buf, uint32_t *Len)
 {
-    for (uint32_t i = 0; i < *Len; i++)
+    if (usb_rx_queue == NULL || Buf == NULL || Len == NULL || *Len == 0)
+    {
+        return;
+    }
+
+    uint32_t in_len = *Len;
+    if (in_len > USB_RX_MSG_LEN)
+    {
+        in_len = USB_RX_MSG_LEN;
+    }
+
+    // 从静态池中获取一个消息对象
+    usb_rx_msg_t *msg = &usb_rx_msg_pool[usb_rx_msg_idx];
+    msg->len = (uint16_t)in_len;
+    memcpy(msg->data, Buf, in_len);
+
+    // 发送消息指针。注意：这里发送的是池中对象的指针。
+    // usb_rx_msg_idx 简单自增实现轮转（Circular Buffer 思想）
+    if (osMessagePut(usb_rx_queue, (uint32_t)msg, 0) == osOK)
+    {
+        usb_rx_msg_idx = (usb_rx_msg_idx + 1) % USB_RX_MSG_COUNT;
+    }
+}
+
+static void process_usb_bytes(uint8_t* Buf, uint16_t Len)
+{
+    for (uint16_t i = 0; i < Len; i++)
     {
         uint8_t byte = Buf[i];
-        
+
         switch (rx_state)
         {
             case WAIT_FOR_HEADER1:
@@ -318,7 +359,7 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                     rx_state = WAIT_FOR_HEADER2;
                 }
                 break;
-                
+
             case WAIT_FOR_HEADER2:
                 if (byte == MOTOR_FRAME_HEADER_2)
                 {
@@ -330,7 +371,7 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                     rx_state = WAIT_FOR_HEADER1;
                 }
                 break;
-                
+
             case RECEIVING_LENGTH:
                 rx_buffer[rx_index++] = byte;
                 if (rx_index >= 4)  // 帧头(2) + 长度(2)
@@ -339,10 +380,10 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                     rx_state = RECEIVING_DATA;
                 }
                 break;
-                
+
             case RECEIVING_DATA:
                 rx_buffer[rx_index++] = byte;
-                
+
                 // 检查是否接收完整：帧头(2) + 长度(2) + 数据(N) + CRC32(4)
                 if (rx_index >= 4 + expected_data_length + 4)
                 {
@@ -350,26 +391,26 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                     size_t crc_offset = 4 + expected_data_length;
                     uint32_t received_crc;
                     memcpy(&received_crc, rx_buffer + crc_offset, sizeof(uint32_t));
-                    
+
                     uint32_t calculated_crc = calculate_crc32(rx_buffer, crc_offset);
-                    
+
                     if (received_crc == calculated_crc)
                     {
                         // CRC校验通过，解析数据
                         uint8_t *data = rx_buffer + 4;  // 跳过帧头和长度
-                        
+
                         // ========== 保存接收到的数据（新增）==========
                         // 复制数据到全局缓冲区供外部使用
                         memcpy(received_data_buffer, data, expected_data_length);
                         received_data_length = expected_data_length;
                         data_ready_flag = 1;  // 设置数据就绪标志
-                        
+
                         // ========== 解析数据 ==========
                         if (expected_data_length >= 1)
                         {
                             size_t offset = 0;
                             uint8_t msg_id = data[offset++];
-                            
+
                             switch (msg_id)
                             {
                                 case TRANS_MSG_ID_CHASSIS_CMD:
@@ -381,29 +422,27 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                                         memcpy(&linear_x, data + offset, sizeof(float)); offset += sizeof(float);
                                         memcpy(&linear_y, data + offset, sizeof(float)); offset += sizeof(float);
                                         memcpy(&angular_z, data + offset, sizeof(float)); offset += sizeof(float);
-                                        
+
                                         // 存储到底盘命令结构体
                                         chassis_cmd_received.linear_x = linear_x;
                                         chassis_cmd_received.linear_y = linear_y;
                                         chassis_cmd_received.angular_z = angular_z;
                                         chassis_cmd_received.updated = 1;  // 标记数据已更新
-                                        trans_fdb_data.liner_x = linear_x;
-                                        trans_fdb_data.liner_y = linear_y;
-                                        trans_fdb_data.liner_z = angular_z;
+
                                         // TODO: 在这里添加你的底盘控制逻辑
                                         // 例如：将速度命令转换为电机控制指令
                                         // 或者发布到底盘控制topic
                                     }
                                     break;
                                 }
-                                
+
                                 case TRANS_MSG_ID_RC_DBUS:
                                 {
                                     // 如果需要接收遥控器数据的话
                                     // 添加解析逻辑
                                     break;
                                 }
-                                
+
                                 default:
                                 {
                                     // 未知消息ID
@@ -412,7 +451,7 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
                             }
                         }
                     }
-                    
+
                     // 重置状态
                     rx_state = WAIT_FOR_HEADER1;
                     rx_index = 0;
@@ -437,6 +476,13 @@ void trans_task_init(void)
     memset(&trans_fdb_data, 0, sizeof(trans_fdb_data));
     rx_state = WAIT_FOR_HEADER1;
     rx_index = 0;
+
+    if (usb_rx_queue == NULL)
+    {
+        osMessageQDef(usb_rx_queue_def, USB_RX_MSG_COUNT, usb_rx_msg_t);
+        usb_rx_queue = osMessageCreate(osMessageQ(usb_rx_queue_def), NULL);
+    }
+
     rc_now = dbus_rc_init();
     // 初始化订阅
     trans_sub_init();
@@ -450,6 +496,25 @@ void trans_control_task(void)
     
     // 订阅数据更新
     trans_sub_pull();
+
+    // 处理消息队列中的所有消息
+    osEvent evt;
+    while (1)
+    {
+        evt = osMessageGet(usb_rx_queue, 0); // 0 表示不阻塞
+        if (evt.status == osEventMessage)
+        {
+            usb_rx_msg_t *msg = (usb_rx_msg_t *)evt.value.p;
+            if (msg != NULL && msg->len > 0)
+            {
+                process_usb_bytes(msg->data, msg->len);
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
     
     /* ==================== 心跳检测 ==================== */
     if ((dwt_get_time_ms() - heart_dt) >= HEART_BEAT)
