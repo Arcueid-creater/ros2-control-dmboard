@@ -47,7 +47,7 @@ static char cmd_dt_str[16], motor_dt_str[16], chassis_dt_str[16],
     osThreadDef(gimbaltask, gimbal_task_entry, osPriorityNormal, 0, 1024);
     gimbalTaskHandle = osThreadCreate(osThread(gimbaltask), NULL);
     // //
-    osThreadDef(transtask, trans_task_entry, osPriorityNormal, 0, 4096);
+    osThreadDef(transtask, trans_task_entry, osPriorityAboveNormal, 0, 5120);
     transTaskHandle = osThreadCreate(osThread(transtask), NULL);
 
     osThreadDef(shoottask, shoot_task_entry, osPriorityNormal, 0, 1024);
@@ -78,7 +78,7 @@ __attribute__((noreturn))  void LifterTask_entry (void const *argument)
          lifter_tim=lifter_dt;
          if (chassis_dt > 5.5) {
              Float2Str(chassis_dt_str,chassis_dt);
-             LOGERROR("[freeRTOS] Chassis Task is being DELAY! dt = %s\r\n", &chassis_dt_str);
+             //("[freeRTOS] Chassis Task is being DELAY! dt = %s\r\n", &chassis_dt_str);
          }
 
          /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -103,7 +103,7 @@ __attribute__((noreturn))  void motor_task_entry(void const *argument)
         motor_tim=motor_dt;
         if (motor_dt > 1.5) {
             Float2Str(motor_dt_str,motor_dt);
-            LOGERROR("[freeRTOS] Motor Task is being DELAY! dt = %s\r\n", &motor_dt_str);
+            //("[freeRTOS] Motor Task is being DELAY! dt = %s\r\n", &motor_dt_str);
         }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -129,7 +129,7 @@ __attribute__((noreturn))  void chassis_task_entry(void const *argument)
         chassis_tim=chassis_dt;
         if (chassis_dt > 5.5) {
             Float2Str(chassis_dt_str,chassis_dt);
-            LOGERROR("[freeRTOS] Chassis Task is being DELAY! dt = %s\r\n", &chassis_dt_str);
+            //("[freeRTOS] Chassis Task is being DELAY! dt = %s\r\n", &chassis_dt_str);
         }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -153,7 +153,7 @@ int cmd_tim=0;
          cmd_tim=cmd_dt;
          if (cmd_dt > 1.5) {
              Float2Str(cmd_dt_str,cmd_dt);
-             LOGERROR("[freeRTOS] Cmd Task is being DELAY! dt = %s\r\n", &cmd_dt_str);
+             //("[freeRTOS] Cmd Task is being DELAY! dt = %s\r\n", &cmd_dt_str);
          }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -177,14 +177,14 @@ int trans_tim=0;
         trans_tim=trans_dt;
         if (trans_dt > 1.5) {
             Float2Str(trans_dt_str,trans_dt);
-            LOGERROR("[freeRTOS] Trans Task is being DELAY! dt = %s\r\n", &trans_dt_str);
+            //("[freeRTOS] Trans Task is being DELAY! dt = %s\r\n", &trans_dt_str);
         }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
 
         trans_control_task();
 
-        vTaskDelayUntil(&trans_wake_time, 1);
+        vTaskDelayUntil(&trans_wake_time, 2);
     }
 }
 int gimbal_tim=0;
@@ -201,7 +201,7 @@ int gimbal_tim=0;
          gimbal_tim=gimbal_dt;
          if (gimbal_dt > 1.5) {
              Float2Str(gimbal_start_str,gimbal_dt);
-             LOGERROR("[freeRTOS] Gimbal Task is being DELAY! dt = %s\r\n", &gimbal_start_str);
+             //("[freeRTOS] Gimbal Task is being DELAY! dt = %s\r\n", &gimbal_start_str);
          }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -225,7 +225,7 @@ int shoot_tim=0;
          shoot_tim=shoot_dt;
          if (shoot_dt > 1.5) {
              Float2Str(shoot_dt_str,shoot_dt);
-             LOGERROR("[freeRTOS] shoot Task is being DELAY! dt = %s\r\n", &shoot_dt_str);
+             //("[freeRTOS] shoot Task is being DELAY! dt = %s\r\n", &shoot_dt_str);
          }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
@@ -249,7 +249,7 @@ int ins_tim=0;
          ins_tim=ins_dt;
          if (ins_dt > 1.5) {
              Float2Str(ins_dt_str,ins_dt);
-             LOGERROR("[freeRTOS] ins Task is being DELAY! dt = %s\r\n", &ins_dt_str);
+             //("[freeRTOS] ins Task is being DELAY! dt = %s\r\n", &ins_dt_str);
          }
 
 /* ------------------------------ 调试监测线程调度 ------------------------------ */
