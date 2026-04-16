@@ -47,7 +47,7 @@
   * @brief Configuration file for Usb otg low level driver.
   * @{
   */
-   // LineCoding
+
 /** @defgroup USBD_CONF_Exported_Variables USBD_CONF_Exported_Variables
   * @brief Public variables.
   * @{

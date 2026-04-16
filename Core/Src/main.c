@@ -245,7 +245,6 @@ void SystemClock_Config(void)
   * @retval None
   */
 
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None

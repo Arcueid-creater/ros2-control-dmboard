@@ -4,6 +4,7 @@
 #include "queue.h"
 #include "rm_module.h"
 #include "usbd_cdc_if.h"
+#include "usbd_cdc.h"
 #include "trans_task.h"
 #include "gimbal_task.h"
 #include "rc_dbus.h"
@@ -14,16 +15,34 @@
 #define USB_RX_MSG_LEN          512
 #define USB_RX_MSG_COUNT        8
 
+#define USB_TX_MSG_COUNT        8
+#define USB_TX_PAYLOAD_MAX      512
+#define USB_TX_FRAME_MAX        (2U + 2U + USB_TX_PAYLOAD_MAX + 4U)
+
 typedef struct
 {
     uint16_t len;
     uint8_t data[USB_RX_MSG_LEN];
 } usb_rx_msg_t;
 
+typedef struct
+{
+    uint16_t len;
+    uint8_t data[USB_TX_FRAME_MAX];
+} usb_tx_msg_t;
+
 static QueueHandle_t usb_rx_queue = NULL;
 static usb_rx_msg_t usb_rx_msg_pool[USB_RX_MSG_COUNT];
 static uint8_t usb_rx_msg_idx = 0;
 static void process_usb_bytes(uint8_t* Buf, uint16_t Len);
+
+static QueueHandle_t usb_tx_queue = NULL;
+static QueueHandle_t usb_tx_free_queue = NULL;
+static usb_tx_msg_t usb_tx_msg_pool[USB_TX_MSG_COUNT];
+static usb_tx_msg_t *usb_tx_inflight = NULL;
+static void usb_tx_pump(void);
+
+extern USBD_HandleTypeDef hUsbDeviceHS;
 
 /* ==================== 线程间通信相关 ==================== */
 static rc_dbus_obj_t *rc_now, *rc_last;
@@ -190,6 +209,9 @@ static void send_rc_dbus_data(const rc_dbus_obj_t* rc)
     uint8_t data[256];
     size_t offset = 0;
 
+    enum { SEND_RC_DBUS_PAYLOAD_LEN = (1 + 4 * 2 + 2 + 2 * 2 + 2 + 2 + 2 + 4 * (1 + 2 + 4 + 2 + 2 + 1)) };
+    (void)SEND_RC_DBUS_PAYLOAD_LEN;
+
     if (rc == NULL)
     {
         return;
@@ -233,28 +255,90 @@ static void send_rc_dbus_data(const rc_dbus_obj_t* rc)
  */
 static void send_packet(uint8_t *data, uint16_t length)
 {
-    static uint8_t tx_buffer[256];
+    if (usb_tx_queue == NULL || data == NULL)
+    {
+        return;
+    }
+
+    if (length > USB_TX_PAYLOAD_MAX)
+    {
+        length = USB_TX_PAYLOAD_MAX;
+    }
+
+    usb_tx_msg_t *msg = NULL;
+    if (usb_tx_free_queue == NULL)
+    {
+        return;
+    }
+
+    if (xQueueReceive(usb_tx_free_queue, &msg, 0) != pdPASS || msg == NULL)
+    {
+        return;
+    }
+
     size_t offset = 0;
     
     // 1. 帧头
-    tx_buffer[offset++] = MOTOR_FRAME_HEADER_1;
-    tx_buffer[offset++] = MOTOR_FRAME_HEADER_2;
+    msg->data[offset++] = MOTOR_FRAME_HEADER_1;
+    msg->data[offset++] = MOTOR_FRAME_HEADER_2;
     
     // 2. 数据长度
-    memcpy(tx_buffer + offset, &length, sizeof(uint16_t));
+    memcpy(msg->data + offset, &length, sizeof(uint16_t));
     offset += sizeof(uint16_t);
     
     // 3. 数据
-    memcpy(tx_buffer + offset, data, length);
+    memcpy(msg->data + offset, data, length);
     offset += length;
     
     // 4. 计算CRC32（从帧头到数据结束）
-    uint32_t crc = calculate_crc32(tx_buffer, offset);
-    memcpy(tx_buffer + offset, &crc, sizeof(uint32_t));
+    uint32_t crc = calculate_crc32(msg->data, offset);
+    memcpy(msg->data + offset, &crc, sizeof(uint32_t));
     offset += sizeof(uint32_t);
+
+    msg->len = (uint16_t)offset;
     
     // 5. 发送
-    CDC_Transmit_HS(tx_buffer, offset);
+    if (xQueueSend(usb_tx_queue, &msg, 0) != pdPASS)
+    {
+        (void)xQueueSend(usb_tx_free_queue, &msg, 0);
+    }
+}
+
+static void usb_tx_pump(void)
+{
+    if (usb_tx_queue == NULL)
+    {
+        return;
+    }
+
+    USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceHS.pClassData;
+    if (hcdc == NULL)
+    {
+        return;
+    }
+
+    if (hcdc->TxState != 0U)
+    {
+        return;
+    }
+
+    if (usb_tx_inflight != NULL)
+    {
+        (void)xQueueSend(usb_tx_free_queue, &usb_tx_inflight, 0);
+        usb_tx_inflight = NULL;
+    }
+
+    if (usb_tx_inflight == NULL)
+    {
+        (void)xQueueReceive(usb_tx_queue, &usb_tx_inflight, 0);
+    }
+
+    if (usb_tx_inflight == NULL)
+    {
+        return;
+    }
+
+    (void)CDC_Transmit_HS(usb_tx_inflight->data, usb_tx_inflight->len);
 }
 
 /**
@@ -488,6 +572,24 @@ void trans_task_init(void)
         usb_rx_queue = xQueueCreate(USB_RX_MSG_COUNT, sizeof(usb_rx_msg_t *));
     }
 
+    if (usb_tx_queue == NULL)
+    {
+        usb_tx_queue = xQueueCreate(USB_TX_MSG_COUNT, sizeof(usb_tx_msg_t *));
+    }
+
+    if (usb_tx_free_queue == NULL)
+    {
+        usb_tx_free_queue = xQueueCreate(USB_TX_MSG_COUNT, sizeof(usb_tx_msg_t *));
+        if (usb_tx_free_queue != NULL)
+        {
+            for (uint32_t i = 0; i < USB_TX_MSG_COUNT; i++)
+            {
+                usb_tx_msg_t *p = &usb_tx_msg_pool[i];
+                (void)xQueueSend(usb_tx_free_queue, &p, 0);
+            }
+        }
+    }
+
     rc_now = dbus_rc_init();
     // 初始化订阅
     trans_sub_init();
@@ -511,6 +613,8 @@ void trans_control_task(void)
             process_usb_bytes(msg->data, msg->len);
         }
     }
+
+    usb_tx_pump();
     
     /* ==================== 心跳检测 ==================== */
     if ((dwt_get_time_ms() - heart_dt) >= HEART_BEAT)

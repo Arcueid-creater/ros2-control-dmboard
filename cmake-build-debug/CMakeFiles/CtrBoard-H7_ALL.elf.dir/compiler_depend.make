@@ -3876,7 +3876,7 @@ CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/algorithm/kalman_filter/kalman_filter.c.o
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
-CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/bmi088/BMI088Middleware.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/BMI088Middleware.c \
+CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/BMI088/BMI088Middleware.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/BMI088Middleware.c \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/main.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/stm32h7xx_hal_conf.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h723xx.h \
@@ -3936,7 +3936,7 @@ CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/bmi088/BMI088Middleware.c.obj: D:
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
-CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/bmi088/BMI088driver.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/BMI088driver.c \
+CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/BMI088/BMI088driver.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/BMI088driver.c \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/FreeRTOSConfig.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/fdcan.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/main.h \
@@ -4061,7 +4061,7 @@ CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/bmi088/BMI088driver.c.obj: D:/Rob
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Middlewares/Third_Party/SEGGER/Config/SEGGER_RTT_Conf.h
 
-CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/bmi088/transfer_function.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/transfer_function.c \
+CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/BMI088/transfer_function.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/BMI088/transfer_function.c \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/main.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/stm32h7xx_hal_conf.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h723xx.h \
@@ -5526,7 +5526,7 @@ CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/pwm/drv_PWM.c.obj: D:/Robomaster/
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
-CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/rc/dbus/rc_dbus.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/rc/Dbus/rc_dbus.c \
+CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/rc/Dbus/rc_dbus.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/rc/Dbus/rc_dbus.c \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/FreeRTOSConfig.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/stm32h7xx_hal_conf.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Drivers/CMSIS/Device/ST/STM32H7xx/Include/stm32h723xx.h \
@@ -5608,7 +5608,7 @@ CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/rc/dbus/rc_dbus.c.obj: D:/Robomas
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
   D:/qq/wenjian/ARM_GCC/ARM_GCC/ARM_GCC/arm/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h
 
-CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/rc/keyboard/keyboard.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/rc/Keyboard/keyboard.c \
+CMakeFiles/CtrBoard-H7_ALL.elf.dir/src/modules/rc/Keyboard/keyboard.c.obj: D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/src/modules/rc/Keyboard/keyboard.c \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/FreeRTOSConfig.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/fdcan.h \
   D:/Robomaster/ros2-mecanum-dmboard/HNU_Embedded_Framework/Core/Inc/main.h \
