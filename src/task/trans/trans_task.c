@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "queue.h"
 #include "rm_module.h"
 #include "usbd_cdc_if.h"
 #include "trans_task.h"
@@ -9,7 +11,7 @@
 #define HEART_BEAT 500 // ms
 
 /* ==================== USB接收：队列传输（新增）==================== */
-#define USB_RX_MSG_LEN          256
+#define USB_RX_MSG_LEN          512
 #define USB_RX_MSG_COUNT        8
 
 typedef struct
@@ -18,7 +20,7 @@ typedef struct
     uint8_t data[USB_RX_MSG_LEN];
 } usb_rx_msg_t;
 
-static osMessageQId usb_rx_queue = NULL;
+static QueueHandle_t usb_rx_queue = NULL;
 static usb_rx_msg_t usb_rx_msg_pool[USB_RX_MSG_COUNT];
 static uint8_t usb_rx_msg_idx = 0;
 static void process_usb_bytes(uint8_t* Buf, uint16_t Len);
@@ -337,9 +339,13 @@ void process_usb_data(uint8_t* Buf, uint32_t *Len)
 
     // 发送消息指针。注意：这里发送的是池中对象的指针。
     // usb_rx_msg_idx 简单自增实现轮转（Circular Buffer 思想）
-    if (osMessagePut(usb_rx_queue, (uint32_t)msg, 0) == osOK)
     {
-        usb_rx_msg_idx = (usb_rx_msg_idx + 1) % USB_RX_MSG_COUNT;
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        if (xQueueSendFromISR(usb_rx_queue, &msg, &xHigherPriorityTaskWoken) == pdPASS)
+        {
+            usb_rx_msg_idx = (usb_rx_msg_idx + 1) % USB_RX_MSG_COUNT;
+        }
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
 
@@ -479,8 +485,7 @@ void trans_task_init(void)
 
     if (usb_rx_queue == NULL)
     {
-        osMessageQDef(usb_rx_queue_def, USB_RX_MSG_COUNT, usb_rx_msg_t);
-        usb_rx_queue = osMessageCreate(osMessageQ(usb_rx_queue_def), NULL);
+        usb_rx_queue = xQueueCreate(USB_RX_MSG_COUNT, sizeof(usb_rx_msg_t *));
     }
 
     rc_now = dbus_rc_init();
@@ -498,21 +503,12 @@ void trans_control_task(void)
     trans_sub_pull();
 
     // 处理消息队列中的所有消息
-    osEvent evt;
-    while (1)
+    usb_rx_msg_t *msg = NULL;
+    while (xQueueReceive(usb_rx_queue, &msg, 0) == pdPASS)
     {
-        evt = osMessageGet(usb_rx_queue, 0); // 0 表示不阻塞
-        if (evt.status == osEventMessage)
+        if (msg != NULL && msg->len > 0)
         {
-            usb_rx_msg_t *msg = (usb_rx_msg_t *)evt.value.p;
-            if (msg != NULL && msg->len > 0)
-            {
-                process_usb_bytes(msg->data, msg->len);
-            }
-        }
-        else
-        {
-            break;
+            process_usb_bytes(msg->data, msg->len);
         }
     }
     
